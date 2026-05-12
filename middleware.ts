@@ -1,6 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
-import { SESSION_COOKIE } from "@/lib/auth-constants";
+
+/**
+ * Nama cookie sesi — harus sama persis dengan `SESSION_COOKIE` di `lib/auth-constants.ts`.
+ * Middleware Edge Vercel tidak boleh `import` file aplikasi (`@/…` maupun relatif), hanya paket seperti `jose`.
+ */
+const SESSION_COOKIE_NAME = "cuan_token";
 
 export async function middleware(request: NextRequest) {
   const enc = process.env.JWT_SECRET;
@@ -8,7 +13,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
   const secret = new TextEncoder().encode(enc);
-  const token = request.cookies.get(SESSION_COOKIE)?.value;
+  const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
   if (!token) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
