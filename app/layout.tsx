@@ -6,6 +6,9 @@ import "@fontsource/montserrat/700.css";
 import "@fontsource/montserrat/800.css";
 import "./globals.css";
 
+/** Hindari prerender bermasalah di beberapa host; Vercel tetap cache per request. */
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Cuanin",
   description: "Aplikasi web mobile-first untuk HPP, arus kas, dan laba usaha."

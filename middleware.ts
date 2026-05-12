@@ -49,20 +49,24 @@ async function verifyJwtHs256Edge(token: string, secret: Uint8Array): Promise<bo
 }
 
 export async function middleware(request: NextRequest) {
-  const enc = process.env.JWT_SECRET;
-  if (!enc || enc.length < 16) {
+  try {
+    const enc = process.env.JWT_SECRET;
+    if (!enc || enc.length < 16) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+    const secret = new TextEncoder().encode(enc);
+    const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
+    if (!token) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+    const ok = await verifyJwtHs256Edge(token, secret);
+    if (!ok) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+    return NextResponse.next();
+  } catch {
     return NextResponse.redirect(new URL("/login", request.url));
   }
-  const secret = new TextEncoder().encode(enc);
-  const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
-  if (!token) {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
-  const ok = await verifyJwtHs256Edge(token, secret);
-  if (!ok) {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
-  return NextResponse.next();
 }
 
 export const config = {
