@@ -1,6 +1,5 @@
 import { SignJWT, jwtVerify } from "jose";
-
-const COOKIE = "cuan_token";
+export { SESSION_COOKIE as COOKIE } from "@/lib/auth-constants";
 
 function getSecret() {
   const raw = process.env.JWT_SECRET;
@@ -31,5 +30,3 @@ export async function verifyToken(token: string): Promise<SessionUser> {
   const email = typeof payload.email === "string" ? payload.email : "";
   return { userId: Number(sub), email };
 }
-
-export { COOKIE };

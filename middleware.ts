@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
-import { COOKIE } from "@/lib/session";
+import { SESSION_COOKIE } from "@/lib/auth-constants";
 
 export async function middleware(request: NextRequest) {
   const enc = process.env.JWT_SECRET;
@@ -8,7 +8,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
   const secret = new TextEncoder().encode(enc);
-  const token = request.cookies.get(COOKIE)?.value;
+  const token = request.cookies.get(SESSION_COOKIE)?.value;
   if (!token) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
