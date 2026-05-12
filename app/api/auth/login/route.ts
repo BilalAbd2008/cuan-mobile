@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { RowDataPacket } from "mysql2";
 import bcrypt from "bcryptjs";
+import { describeAuthServerError } from "@/lib/auth-server-errors";
 import { getPool } from "@/lib/db";
 import { COOKIE, createToken } from "@/lib/session";
 
@@ -42,8 +43,9 @@ export async function POST(request: Request) {
       secure: process.env.NODE_ENV === "production"
     });
     return res;
-  } catch (error) {
+  } catch (error: unknown) {
     console.error(error);
-    return NextResponse.json({ message: "Gagal masuk." }, { status: 500 });
+    const message = describeAuthServerError(error, "Gagal masuk.");
+    return NextResponse.json({ message }, { status: 500 });
   }
 }

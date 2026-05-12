@@ -57,13 +57,21 @@ export function RegisterForm() {
           agree: true
         })
       });
-      const data = await res.json();
+      let data: { message?: string } = {};
+      try {
+        data = (await res.json()) as { message?: string };
+      } catch {
+        setMessage(`Server tidak mengembalikan JSON (${res.status}). Cek log deployment Vercel.`);
+        return;
+      }
       if (!res.ok) {
-        setMessage(data.message ?? "Gagal mendaftar.");
+        setMessage(data.message ?? `Gagal mendaftar (${res.status}).`);
         return;
       }
       router.replace("/dashboard");
       router.refresh();
+    } catch {
+      setMessage("Jaringan error atau permintaan dibatalkan. Coba lagi.");
     } finally {
       setLoading(false);
     }

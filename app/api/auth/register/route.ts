@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { ResultSetHeader } from "mysql2";
 import bcrypt from "bcryptjs";
 import { getPool } from "@/lib/db";
+import { describeAuthServerError } from "@/lib/auth-server-errors";
 import { COOKIE, createToken } from "@/lib/session";
 
 const emailOk = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -56,6 +57,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Email sudah terdaftar." }, { status: 409 });
     }
     console.error(error);
-    return NextResponse.json({ message: "Gagal mendaftar." }, { status: 500 });
+    const message = describeAuthServerError(error, "Gagal mendaftar.");
+    return NextResponse.json({ message }, { status: 500 });
   }
 }

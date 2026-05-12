@@ -42,13 +42,21 @@ export function LoginForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim().toLowerCase(), password })
       });
-      const data = await res.json();
+      let data: { message?: string } = {};
+      try {
+        data = (await res.json()) as { message?: string };
+      } catch {
+        setMessage(`Server tidak mengembalikan JSON (${res.status}). Cek Vercel → Deployments → Build / Functions log.`);
+        return;
+      }
       if (!res.ok) {
-        setMessage(data.message ?? "Gagal masuk.");
+        setMessage(data.message ?? `Gagal masuk (${res.status}).`);
         return;
       }
       router.replace("/dashboard");
       router.refresh();
+    } catch {
+      setMessage("Jaringan error atau permintaan dibatalkan. Coba lagi.");
     } finally {
       setLoading(false);
     }
