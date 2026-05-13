@@ -18,16 +18,28 @@ export async function POST(request: Request) {
     const agree = Boolean(body.agree);
 
     if (!agree) {
-      return NextResponse.json({ message: "Anda harus menyetujui syarat & ketentuan." }, { status: 400 });
+      return NextResponse.json(
+        { message: "Anda harus menyetujui syarat & ketentuan." },
+        { status: 400 },
+      );
     }
     if (!emailOk(email)) {
-      return NextResponse.json({ message: "Format email tidak valid." }, { status: 400 });
+      return NextResponse.json(
+        { message: "Format email tidak valid." },
+        { status: 400 },
+      );
     }
     if (password.length < 8) {
-      return NextResponse.json({ message: "Password minimal 8 karakter." }, { status: 400 });
+      return NextResponse.json(
+        { message: "Password minimal 8 karakter." },
+        { status: 400 },
+      );
     }
     if (!fullName || !businessName) {
-      return NextResponse.json({ message: "Nama lengkap dan nama usaha wajib diisi." }, { status: 400 });
+      return NextResponse.json(
+        { message: "Nama lengkap dan nama usaha wajib diisi." },
+        { status: 400 },
+      );
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
@@ -35,15 +47,24 @@ export async function POST(request: Request) {
     const [result] = await getPool().execute<ResultSetHeader>(
       `INSERT INTO users (email, password_hash, full_name, business_name)
        VALUES (:email, :passwordHash, :fullName, :businessName)`,
-      { email, passwordHash, fullName, businessName }
+      { email, passwordHash, fullName, businessName },
     );
 
     const userId = result.insertId;
-    return NextResponse.json({ message: "Akun berhasil dibuat.", userId }, { status: 201 });
+    return NextResponse.json(
+      { message: "Akun berhasil dibuat.", userId },
+      { status: 201 },
+    );
   } catch (error: unknown) {
-    const code = error && typeof error === "object" && "code" in error ? String((error as { code: string }).code) : "";
+    const code =
+      error && typeof error === "object" && "code" in error
+        ? String((error as { code: string }).code)
+        : "";
     if (code === "ER_DUP_ENTRY") {
-      return NextResponse.json({ message: "Email sudah terdaftar." }, { status: 409 });
+      return NextResponse.json(
+        { message: "Email sudah terdaftar." },
+        { status: 409 },
+      );
     }
     console.error(error);
     const message = describeAuthServerError(error, "Gagal mendaftar.");

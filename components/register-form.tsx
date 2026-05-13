@@ -54,14 +54,16 @@ export function RegisterForm() {
           business_name: businessName.trim(),
           email: email.trim().toLowerCase(),
           password,
-          agree: true
-        })
+          agree: true,
+        }),
       });
       let data: { message?: string } = {};
       try {
         data = (await res.json()) as { message?: string };
       } catch {
-        setMessage(`Server tidak mengembalikan JSON (${res.status}). Cek log deployment Vercel.`);
+        setMessage(
+          `Server tidak mengembalikan JSON (${res.status}). Cek log deployment Vercel.`,
+        );
         return;
       }
       if (!res.ok) {
@@ -91,7 +93,11 @@ export function RegisterForm() {
         <form className="auth-form dense" onSubmit={onSubmit}>
           <label>
             NAMA LENGKAP
-            <input onChange={(ev) => setFullName(ev.target.value)} placeholder="Budi Santoso" value={fullName} />
+            <input
+              onChange={(ev) => setFullName(ev.target.value)}
+              placeholder="Budi Santoso"
+              value={fullName}
+            />
           </label>
           <label>
             NAMA USAHA
@@ -123,13 +129,19 @@ export function RegisterForm() {
             />
           </label>
           <label className="agree-row">
-            <input checked={agree} onChange={(ev) => setAgree(ev.target.checked)} type="checkbox" />
+            <input
+              checked={agree}
+              onChange={(ev) => setAgree(ev.target.checked)}
+              type="checkbox"
+            />
             <span>Saya menyetujui syarat &amp; ketentuan</span>
           </label>
           <button className="gradient-button" disabled={loading} type="submit">
             {loading ? "Memproses…" : "Daftar"}
           </button>
-          {message ? <p className="form-message form-message-error">{message}</p> : null}
+          {message ? (
+            <p className="form-message form-message-error">{message}</p>
+          ) : null}
         </form>
         <p className="auth-switch">
           Sudah punya akun? <Link href="/login">Masuk</Link>
