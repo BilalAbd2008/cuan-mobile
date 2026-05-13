@@ -16,12 +16,27 @@ function requiredEnv(name: string) {
 
 export function getPool() {
   if (!globalForMysql.mysqlPool) {
+    const useSsl =
+      process.env.MYSQL_SSL === "true" ||
+      process.env.MYSQL_SSL_MODE === "required" ||
+      process.env.MYSQL_SSL_MODE === "REQUIRED";
+
+    const ssl =
+      useSsl
+        ? {
+            ca: process.env.MYSQL_SSL_CA?.replace(/\\n/g, "\n"),
+            rejectUnauthorized:
+              process.env.MYSQL_SSL_REJECT_UNAUTHORIZED === "false" ? false : true
+          }
+        : undefined;
+
     globalForMysql.mysqlPool = mysql.createPool({
       host: requiredEnv("MYSQL_HOST"),
       port: Number(process.env.MYSQL_PORT ?? 3306),
       database: requiredEnv("MYSQL_DATABASE"),
       user: requiredEnv("MYSQL_USER"),
       password: process.env.MYSQL_PASSWORD ?? "",
+      ssl,
       waitForConnections: true,
       connectionLimit: 10,
       namedPlaceholders: true

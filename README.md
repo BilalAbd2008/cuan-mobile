@@ -5,9 +5,8 @@ Starter website mobile-first berbasis Next.js App Router dengan contoh koneksi M
 ## Menjalankan lokal
 
 1. Salin `.env.example` menjadi `.env.local`.
-2. Sesuaikan kredensial MySQL Laragon.
-3. Import [database/schema.sql](database/schema.sql) lewat phpMyAdmin atau MySQL client Laragon.
-   Schema ini sekarang mencakup `products`, `transactions`, dan `hpp_calculations`.
+2. Buat database kosong bernama sesuai `MYSQL_DATABASE`, lalu sesuaikan kredensial MySQL lokal.
+3. Jalankan `npm run db:init` untuk membuat tabel, seed data awal, dan tabel `users`.
 4. Jalankan:
 
 ```bash
@@ -49,15 +48,41 @@ npm run dev
 
 Jika koneksi database belum aktif, beberapa layar masih menampilkan fallback mock agar UI tetap bisa dipreview.
 
-## Deploy ke Vercel
+## Deploy gratis ke Vercel + Aiven MySQL
 
-Vercel tidak bisa memakai MySQL Laragon lokal dari internet. Untuk produksi, gunakan database MySQL yang dapat diakses publik atau layanan database terkelola, lalu isi environment variable berikut di dashboard Vercel:
+Vercel tidak bisa memakai MySQL Laragon lokal dari internet. Untuk opsi gratis yang sesuai dengan stack proyek ini, gunakan Aiven for MySQL Free Tier.
 
-- `MYSQL_HOST`
-- `MYSQL_PORT`
-- `MYSQL_DATABASE`
-- `MYSQL_USER`
-- `MYSQL_PASSWORD`
+1. Buat service `MySQL` free tier di Aiven.
+2. Di Aiven, buat database aplikasi, misalnya `cuan_app`, atau gunakan database bawaan provider.
+3. Salin detail koneksi dari halaman service Aiven:
+   - host
+   - port
+   - database
+   - username
+   - password
+4. Isi `.env.local` dengan nilai tersebut, lalu set:
+   - `MYSQL_SSL=true`
+   - `JWT_SECRET` berupa string acak panjang
+5. Jika provider meminta CA certificate, isi `MYSQL_SSL_CA` dengan isi PEM sebagai satu baris menggunakan `\n`.
+6. Jalankan dari lokal:
+
+```bash
+npm run db:init
+npm run db:test
+```
+
+7. Di Vercel Project Settings > Environment Variables, set nilai yang sama untuk `Production`:
+   - `MYSQL_HOST`
+   - `MYSQL_PORT`
+   - `MYSQL_DATABASE`
+   - `MYSQL_USER`
+   - `MYSQL_PASSWORD`
+   - `MYSQL_SSL=true`
+   - `MYSQL_SSL_CA` bila diperlukan
+   - `JWT_SECRET`
+8. Redeploy deployment production setelah environment variable ditambahkan.
+
+Endpoint `/api/health` membantu memastikan `JWT_SECRET` dan konfigurasi MySQL inti sudah terbaca server.
 
 ## Catatan desain
 

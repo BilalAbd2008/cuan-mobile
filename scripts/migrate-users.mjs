@@ -13,6 +13,10 @@ for (const line of fs.readFileSync(envPath, "utf8").split(/\r?\n/)) {
 }
 
 const sql = fs.readFileSync(path.join(root, "database", "migration-users.sql"), "utf8");
+const useSsl =
+  env.MYSQL_SSL === "true" ||
+  env.MYSQL_SSL_MODE === "required" ||
+  env.MYSQL_SSL_MODE === "REQUIRED";
 
 const c = await mysql.createConnection({
   host: env.MYSQL_HOST,
@@ -20,6 +24,12 @@ const c = await mysql.createConnection({
   user: env.MYSQL_USER,
   password: env.MYSQL_PASSWORD || "",
   database: env.MYSQL_DATABASE,
+  ssl: useSsl
+    ? {
+        ca: env.MYSQL_SSL_CA?.replace(/\\n/g, "\n"),
+        rejectUnauthorized: env.MYSQL_SSL_REJECT_UNAUTHORIZED === "false" ? false : true
+      }
+    : undefined,
   multipleStatements: true
 });
 
