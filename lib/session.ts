@@ -4,7 +4,9 @@ export { SESSION_COOKIE as COOKIE } from "@/lib/auth-constants";
 function getSecret() {
   const raw = process.env.JWT_SECRET;
   if (!raw || raw.length < 16) {
-    throw new Error("JWT_SECRET harus diisi (min. 16 karakter) di Vercel Environment Variables (Production) dan .env.local untuk lokal");
+    throw new Error(
+      "JWT_SECRET harus diisi (min. 16 karakter) di Vercel Environment Variables (Production) dan .env.local untuk lokal",
+    );
   }
   return new TextEncoder().encode(raw);
 }
