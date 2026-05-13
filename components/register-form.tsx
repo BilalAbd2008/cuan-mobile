@@ -68,7 +68,7 @@ export function RegisterForm() {
         setMessage(data.message ?? `Gagal mendaftar (${res.status}).`);
         return;
       }
-      router.replace("/dashboard");
+      router.replace("/login");
       router.refresh();
     } catch {
       setMessage("Jaringan error atau permintaan dibatalkan. Coba lagi.");
@@ -115,6 +115,7 @@ export function RegisterForm() {
             PASSWORD
             <input
               autoComplete="new-password"
+              minLength={8}
               onChange={(ev) => setPassword(ev.target.value)}
               placeholder="Min. 8 karakter"
               type="password"

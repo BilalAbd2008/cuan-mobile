@@ -3,7 +3,6 @@ import type { ResultSetHeader } from "mysql2";
 import bcrypt from "bcryptjs";
 import { getPool } from "@/lib/db";
 import { describeAuthServerError } from "@/lib/auth-server-errors";
-import { COOKIE, createToken } from "@/lib/session";
 
 const emailOk = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -40,17 +39,7 @@ export async function POST(request: Request) {
     );
 
     const userId = result.insertId;
-    const token = await createToken(userId, email);
-
-    const res = NextResponse.json({ message: "Akun berhasil dibuat.", userId }, { status: 201 });
-    res.cookies.set(COOKIE, token, {
-      httpOnly: true,
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 30,
-      secure: process.env.NODE_ENV === "production"
-    });
-    return res;
+    return NextResponse.json({ message: "Akun berhasil dibuat.", userId }, { status: 201 });
   } catch (error: unknown) {
     const code = error && typeof error === "object" && "code" in error ? String((error as { code: string }).code) : "";
     if (code === "ER_DUP_ENTRY") {
