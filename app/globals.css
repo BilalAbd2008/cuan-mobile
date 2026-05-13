@@ -65,14 +65,20 @@ h1, h2, p { margin: 0; }
   display: grid;
   justify-items: center;
   gap: 18px;
+  text-align: center;
+  padding-inline: 16px;
 }
 .splash-brand strong {
   font-size: 4rem;
   letter-spacing: 1px;
 }
 .splash-brand span {
+  display: block;
+  max-width: min(90vw, 420px);
   font-size: .86rem;
   letter-spacing: 4px;
+  line-height: 1.5;
+  text-align: center;
 }
 .splash-loader {
   width: min(260px, 70vw);
