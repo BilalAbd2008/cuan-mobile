@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import Image from "next/image";
 import { Search, Upload } from "lucide-react";
 import { ProductCard } from "@/components/cards";
@@ -24,6 +24,12 @@ const defaultProduct = {
 function marginOnPrice(hpp: number, sell: number) {
   if (!sell) return 0;
   return Math.round(((sell - hpp) / sell) * 100);
+}
+
+function cleanNumericInput(event: ChangeEvent<HTMLInputElement>) {
+  const normalized = event.target.value.replace(/\D/g, "").replace(/^0+(?=\d)/, "");
+  if (event.target.value !== normalized) event.target.value = normalized;
+  return Number(normalized || 0);
 }
 
 export function ProductManager() {
@@ -193,20 +199,22 @@ export function ProductManager() {
               <label className="field-block">
                 <span>HPP</span>
                 <input
-                  min={0}
-                  onChange={(event) => setForm({ ...form, hpp_cost: Number(event.target.value) })}
+                  inputMode="numeric"
+                  onChange={(event) => setForm({ ...form, hpp_cost: cleanNumericInput(event) })}
+                  pattern="[0-9]*"
                   placeholder="HPP"
-                  type="number"
+                  type="text"
                   value={form.hpp_cost || ""}
                 />
               </label>
               <label className="field-block">
                 <span>Harga jual</span>
                 <input
-                  min={0}
-                  onChange={(event) => setForm({ ...form, sell_price: Number(event.target.value) })}
+                  inputMode="numeric"
+                  onChange={(event) => setForm({ ...form, sell_price: cleanNumericInput(event) })}
+                  pattern="[0-9]*"
                   placeholder="Harga jual"
-                  type="number"
+                  type="text"
                   value={form.sell_price || ""}
                 />
               </label>

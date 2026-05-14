@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { PencilLine, Trash2 } from "lucide-react";
 import { TransactionCard } from "@/components/cards";
 import { transactions as fallbackTransactions } from "@/components/mock-data";
@@ -23,6 +23,12 @@ const emptyForm = (type: "income" | "expense"): TransactionItem => ({
   quantity: null,
   transaction_date: new Date().toISOString().slice(0, 10)
 });
+
+function cleanNumericInput(event: ChangeEvent<HTMLInputElement>) {
+  const normalized = event.target.value.replace(/\D/g, "").replace(/^0+(?=\d)/, "");
+  if (event.target.value !== normalized) event.target.value = normalized;
+  return Number(normalized || 0);
+}
 
 function detailLine(t: TransactionItem) {
   const d = t.transaction_date ?? new Date().toISOString().slice(0, 10);
@@ -199,10 +205,11 @@ export function FinanceManager({
               <label className="field-block">
                 <span>Nominal</span>
                 <input
-                  min={0}
-                  onChange={(event) => setForm({ ...form, amount: Number(event.target.value) })}
+                  inputMode="numeric"
+                  onChange={(event) => setForm({ ...form, amount: cleanNumericInput(event) })}
+                  pattern="[0-9]*"
                   placeholder="Nominal"
-                  type="number"
+                  type="text"
                   value={form.amount || ""}
                 />
               </label>
@@ -217,12 +224,13 @@ export function FinanceManager({
               <label className="field-block">
                 <span>Jumlah porsi (opsional)</span>
                 <input
-                  min={0}
                   onChange={(event) =>
-                    setForm({ ...form, quantity: event.target.value === "" ? null : Number(event.target.value) })
+                    setForm({ ...form, quantity: event.target.value === "" ? null : cleanNumericInput(event) })
                   }
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   placeholder="Untuk penjualan"
-                  type="number"
+                  type="text"
                   value={form.quantity ?? ""}
                 />
               </label>

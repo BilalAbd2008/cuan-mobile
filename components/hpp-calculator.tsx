@@ -1,10 +1,16 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, type ChangeEvent } from "react";
 import { Save } from "lucide-react";
 
 type CostRow = { name: string; price: number; unit?: string };
+
+function cleanNumericInput(event: ChangeEvent<HTMLInputElement>) {
+  const normalized = event.target.value.replace(/\D/g, "").replace(/^0+(?=\d)/, "");
+  if (event.target.value !== normalized) event.target.value = normalized;
+  return Number(normalized || 0);
+}
 
 export function HppCalculator() {
   const router = useRouter();
@@ -72,9 +78,11 @@ export function HppCalculator() {
           <span>JUMLAH PRODUKSI (PORSI)</span>
           <input
             min={1}
-            onChange={(event) => setProductionQty(Number(event.target.value))}
-            type="number"
-            value={productionQty}
+            inputMode="numeric"
+            onChange={(event) => setProductionQty(cleanNumericInput(event))}
+            pattern="[0-9]*"
+            type="text"
+            value={productionQty || ""}
           />
         </label>
       </section>
@@ -106,11 +114,13 @@ export function HppCalculator() {
             <input
               onChange={(event) =>
                 setMaterials((rows) =>
-                  rows.map((row, rowIndex) => (rowIndex === index ? { ...row, price: Number(event.target.value) } : row))
+                  rows.map((row, rowIndex) => (rowIndex === index ? { ...row, price: cleanNumericInput(event) } : row))
                 )
               }
-              type="number"
-              value={item.price}
+              inputMode="numeric"
+              pattern="[0-9]*"
+              type="text"
+              value={item.price || ""}
             />
             <input
               onChange={(event) =>
@@ -148,11 +158,13 @@ export function HppCalculator() {
             <input
               onChange={(event) =>
                 setOperational((rows) =>
-                  rows.map((row, rowIndex) => (rowIndex === index ? { ...row, price: Number(event.target.value) } : row))
+                  rows.map((row, rowIndex) => (rowIndex === index ? { ...row, price: cleanNumericInput(event) } : row))
                 )
               }
-              type="number"
-              value={item.price}
+              inputMode="numeric"
+              pattern="[0-9]*"
+              type="text"
+              value={item.price || ""}
             />
             <button onClick={() => setOperational((rows) => rows.filter((_, rowIndex) => rowIndex !== index))} type="button">
               ×
