@@ -584,6 +584,9 @@ a.gradient-action {
   box-shadow: 0 14px 32px rgba(52, 87, 70, 0.16);
   backdrop-filter: blur(14px);
   z-index: 40;
+  transition:
+    opacity 0.24s ease,
+    transform 0.24s ease;
 }
 .dock-nav a {
   min-width: 0;
@@ -596,7 +599,6 @@ a.gradient-action {
   border-radius: 16px;
   text-align: center;
   transition:
-    opacity 0.24s ease,
     transform 0.22s ease,
     background-color 0.22s ease,
     color 0.22s ease,
@@ -614,6 +616,14 @@ a.gradient-action {
   animation: nav-pop 0.28s ease both;
 }
 .phone-frame:has(.sheet-overlay) .dock-nav {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(calc(100% + 24px));
+}
+body.modal-open {
+  overflow: hidden;
+}
+body.modal-open .dock-nav {
   opacity: 0;
   pointer-events: none;
   transform: translateX(-50%) translateY(calc(100% + 24px));
@@ -1018,6 +1028,7 @@ a.gradient-action {
 .field-block {
   display: grid;
   gap: 8px;
+  min-width: 0;
 }
 .field-block span {
   font-size: 0.72rem;
@@ -1029,33 +1040,42 @@ a.gradient-action {
 .sheet-overlay {
   position: fixed;
   inset: 0;
-  height: 100dvh;
+  width: 100vw;
+  min-height: 100vh;
+  min-height: 100dvh;
   background: rgba(15, 30, 24, 0.36);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   z-index: 80;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
   overflow-y: auto;
-  padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+  padding: max(18px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom));
   animation: overlay-fade 0.2s ease both;
 }
 .sheet-panel {
   width: min(100%, 430px);
-  max-height: calc(100dvh - max(16px, env(safe-area-inset-top)) - max(16px, env(safe-area-inset-bottom)));
+  max-height: calc(100dvh - max(36px, env(safe-area-inset-top)) - max(36px, env(safe-area-inset-bottom)));
   overflow: auto;
   background: var(--bg);
-  border-radius: 22px 22px 0 0;
-  padding: 18px 18px 28px;
-  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.12);
+  border-radius: 26px;
+  padding: 0 18px 24px;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.16);
   overscroll-behavior: contain;
   animation: sheet-rise 0.24s ease both;
 }
 .sheet-panel-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 14px;
+  margin: 0 -18px 14px;
+  padding: 18px 18px 12px;
+  background: linear-gradient(180deg, var(--bg) 78%, rgba(244, 251, 247, 0));
+  border-radius: 26px 26px 0 0;
 }
 .sheet-close {
   border: 0;
@@ -1067,6 +1087,20 @@ a.gradient-action {
 }
 .sheet-form {
   margin-top: 0;
+}
+.sheet-form input,
+.sheet-form select {
+  min-width: 0;
+  max-width: 100%;
+}
+.sheet-form input[type="date"] {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  text-align: center;
 }
 
 .product-card-plain {

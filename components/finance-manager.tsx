@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
+import { createPortal } from "react-dom";
 import { PencilLine, Trash2 } from "lucide-react";
 import { TransactionCard } from "@/components/cards";
 import { transactions as fallbackTransactions } from "@/components/mock-data";
@@ -58,6 +59,11 @@ export function FinanceManager({
 
   const typeParam = filterType === "all" ? "" : filterType;
   const modalOpen = sheetOpen || editingId !== null;
+
+  useEffect(() => {
+    document.body.classList.toggle("modal-open", modalOpen);
+    return () => document.body.classList.remove("modal-open");
+  }, [modalOpen]);
 
   async function loadTransactions() {
     try {
@@ -176,7 +182,8 @@ export function FinanceManager({
         ))}
       </div>
 
-      {modalOpen ? (
+      {modalOpen && typeof document !== "undefined"
+        ? createPortal(
         <div className="sheet-overlay" onClick={closeModal} role="presentation">
           <div className="sheet-panel" onClick={(e) => e.stopPropagation()} role="dialog">
             <div className="sheet-panel-head">
@@ -250,8 +257,10 @@ export function FinanceManager({
               {message ? <p className="form-message">{message}</p> : null}
             </form>
           </div>
-        </div>
-      ) : null}
+        </div>,
+          document.body
+        )
+        : null}
     </>
   );
 }

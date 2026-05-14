@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { Search, Upload } from "lucide-react";
 import { ProductCard } from "@/components/cards";
@@ -67,6 +68,11 @@ export function ProductManager() {
   useEffect(() => {
     void loadProducts();
   }, []);
+
+  useEffect(() => {
+    document.body.classList.toggle("modal-open", sheetOpen);
+    return () => document.body.classList.remove("modal-open");
+  }, [sheetOpen]);
 
   const visibleProducts = useMemo(
     () => products.filter((product) => product.name.toLowerCase().includes(query.toLowerCase())),
@@ -178,7 +184,8 @@ export function ProductManager() {
       </button>
       {message && !sheetOpen ? <p className="form-message product-toast">{message}</p> : null}
 
-      {sheetOpen ? (
+      {sheetOpen && typeof document !== "undefined"
+        ? createPortal(
         <div className="sheet-overlay" onClick={() => setSheetOpen(false)} role="presentation">
           <div className="sheet-panel" onClick={(e) => e.stopPropagation()} role="dialog">
             <div className="sheet-panel-head">
@@ -252,8 +259,10 @@ export function ProductManager() {
               {message ? <p className="form-message">{message}</p> : null}
             </form>
           </div>
-        </div>
-      ) : null}
+        </div>,
+          document.body
+        )
+        : null}
     </>
   );
 }
