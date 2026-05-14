@@ -18,12 +18,18 @@ export function describeAuthServerError(error: unknown, fallback: string): strin
   }
 
   if (
+    code === "ENOTFOUND" ||
+    /ENOTFOUND|getaddrinfo/i.test(msg)
+  ) {
+    return "Host MySQL tidak ditemukan. Cek MYSQL_HOST di Vercel Environment Variables dan pastikan nilainya persis sama dengan host dari Aiven (tanpa https://, tanpa port, tanpa spasi). Setelah diubah, redeploy.";
+  }
+
+  if (
     code === "ECONNREFUSED" ||
     code === "ETIMEDOUT" ||
-    code === "ENOTFOUND" ||
-    /ECONNREFUSED|ETIMEDOUT|ENOTFOUND|getaddrinfo/i.test(msg)
+    /ECONNREFUSED|ETIMEDOUT/i.test(msg)
   ) {
-    return "Tidak bisa menghubungi MySQL. Di Vercel tidak bisa memakai MYSQL_HOST=127.0.0.1 / Laragon. Gunakan MySQL online (Railway, Aiven, PlanetScale-compatible, dll.), lalu isi MYSQL_HOST dan kredensial di Environment Variables.";
+    return "Tidak bisa menghubungi MySQL. Pastikan MYSQL_HOST, MYSQL_PORT, SSL Aiven, dan kredensial di Vercel Production sudah benar. Jika memakai Aiven, gunakan host dan port dari halaman service Aiven lalu redeploy.";
   }
 
   if (code === "ER_ACCESS_DENIED_ERROR" || msg.includes("Access denied")) {
