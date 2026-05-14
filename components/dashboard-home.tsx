@@ -34,21 +34,22 @@ export function DashboardHome() {
   const [recent, setRecent] = useState<Tx[]>([]);
 
   useEffect(() => {
-    void fetch("/api/dashboard", { cache: "no-store" })
-      .then((r) => {
-        if (r.status === 401) {
-          router.replace("/login");
-          return null;
-        }
-        return r.json();
-      })
-      .then((d) => {
-        if (!d) return;
-        setFullName(d.user?.full_name ?? "Pengguna");
-        setTodayIn(Number(d.today?.income ?? 0));
-        setTodayOut(Number(d.today?.expense ?? 0));
-        setRecent(Array.isArray(d.recent) ? d.recent : []);
-      });
+    async function loadDashboard() {
+      const response = await fetch("/api/dashboard", { cache: "no-store" });
+      if (response.status === 401) {
+        router.replace("/login");
+        return;
+      }
+      const data = await response.json();
+      setFullName(data.user?.full_name ?? "Pengguna");
+      setTodayIn(Number(data.today?.income ?? 0));
+      setTodayOut(Number(data.today?.expense ?? 0));
+      setRecent(Array.isArray(data.recent) ? data.recent : []);
+    }
+
+    void loadDashboard();
+    const interval = window.setInterval(() => void loadDashboard(), 5000);
+    return () => window.clearInterval(interval);
   }, [router]);
 
   function initials(name: string) {

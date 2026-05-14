@@ -23,7 +23,9 @@ export function HppCalculator() {
   ]);
   const [operational, setOperational] = useState<CostRow[]>([
     { name: "Biaya Gas", price: 22000 },
-    { name: "Biaya Listrik", price: 20000 }
+    { name: "Biaya Listrik", price: 20000 },
+    { name: "Tenaga Kerja", price: 15000 },
+    { name: "Kemasan", price: 10000 }
   ]);
   const [result, setResult] = useState<{ hpp: number; price: number } | null>(null);
   const [message, setMessage] = useState("");
@@ -52,13 +54,7 @@ export function HppCalculator() {
       const hpp = data.hpp_per_portion ?? computedHpp;
       const price = data.suggested_price ?? computedPrice;
       setResult({ hpp, price });
-      const q = new URLSearchParams({
-        hpp: String(Math.round(hpp)),
-        price: String(Math.round(price)),
-        margin: String(marginPercent),
-        name: productName || "Produk"
-      });
-      router.push(`/hpp/result?${q.toString()}`);
+      router.push("/products");
     }
   }
 

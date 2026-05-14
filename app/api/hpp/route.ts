@@ -59,9 +59,21 @@ export async function POST(request: Request) {
       }
     );
 
+    const [productResult] = await getPool().execute<ResultSetHeader>(
+      `INSERT INTO products (name, hpp_cost, sell_price, image_path)
+       VALUES (:name, :hppCost, :sellPrice, :imagePath)`,
+      {
+        name: productName,
+        hppCost: hppPerPortion,
+        sellPrice: suggestedPrice,
+        imagePath: "/assets/seafood.png"
+      }
+    );
+
     return NextResponse.json(
       {
         id: result.insertId,
+        product_id: productResult.insertId,
         hpp_per_portion: hppPerPortion,
         suggested_price: suggestedPrice,
         margin_percent: marginPercent

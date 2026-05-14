@@ -103,6 +103,9 @@ p {
   line-height: 1.5;
   text-align: center;
 }
+.splash-brand .brand-logo.large {
+  animation: logo-enter 0.7s ease both;
+}
 .splash-loader {
   width: min(260px, 70vw);
   height: 8px;
@@ -118,7 +121,12 @@ p {
   border-radius: inherit;
   background: linear-gradient(90deg, #13874a, #22c65a);
   transform-origin: left center;
-  animation: splash-load 2.15s ease forwards;
+  animation: splash-load 2.2s ease-in-out forwards;
+}
+.splash-progress {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
 }
 
 .brand-logo {
@@ -588,6 +596,7 @@ a.gradient-action {
   border-radius: 16px;
   text-align: center;
   transition:
+    opacity 0.24s ease,
     transform 0.22s ease,
     background-color 0.22s ease,
     color 0.22s ease,
@@ -603,6 +612,11 @@ a.gradient-action {
 }
 .dock-nav a.active svg {
   animation: nav-pop 0.28s ease both;
+}
+.phone-frame:has(.sheet-overlay) .dock-nav {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(calc(100% + 24px));
 }
 
 .stack-header {
@@ -1016,13 +1030,15 @@ a.gradient-action {
   position: fixed;
   inset: 0;
   height: 100dvh;
-  background: rgba(15, 30, 24, 0.45);
+  background: rgba(15, 30, 24, 0.36);
+  backdrop-filter: blur(8px);
   z-index: 80;
   display: flex;
   align-items: flex-end;
   justify-content: center;
   overflow-y: auto;
   padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+  animation: overlay-fade 0.2s ease both;
 }
 .sheet-panel {
   width: min(100%, 430px);
@@ -1033,6 +1049,7 @@ a.gradient-action {
   padding: 18px 18px 28px;
   box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.12);
   overscroll-behavior: contain;
+  animation: sheet-rise 0.24s ease both;
 }
 .sheet-panel-head {
   display: flex;
@@ -1248,6 +1265,37 @@ a.gradient-action {
   }
   to {
     transform: scale(1);
+  }
+}
+
+@keyframes overlay-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes logo-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.86);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes sheet-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

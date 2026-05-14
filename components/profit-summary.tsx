@@ -33,10 +33,19 @@ export function ProfitSummary() {
   const [data, setData] = useState<ProfitPayload | null>(null);
 
   useEffect(() => {
-    fetch(`/api/profit?month=${encodeURIComponent(month)}`, { cache: "no-store" })
-      .then((response) => (response.ok ? response.json() : Promise.reject()))
-      .then(setData)
-      .catch(() => setData(null));
+    async function loadProfit() {
+      try {
+        const response = await fetch(`/api/profit?month=${encodeURIComponent(month)}`, { cache: "no-store" });
+        if (!response.ok) throw new Error("profit");
+        setData(await response.json());
+      } catch {
+        setData(null);
+      }
+    }
+
+    void loadProfit();
+    const interval = window.setInterval(() => void loadProfit(), 5000);
+    return () => window.clearInterval(interval);
   }, [month]);
 
   const summary = data?.summary ?? {
